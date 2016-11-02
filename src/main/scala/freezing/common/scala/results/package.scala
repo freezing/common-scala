@@ -1,5 +1,7 @@
 package freezing.common.scala
 
+import errors._
+
 package object results {
   // Result that can fail
   sealed abstract class Result[+G] {

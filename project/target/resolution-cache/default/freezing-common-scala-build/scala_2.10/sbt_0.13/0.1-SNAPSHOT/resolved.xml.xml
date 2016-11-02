@@ -4,7 +4,7 @@
 		module="freezing-common-scala-build"
 		revision="0.1-SNAPSHOT"
 		status="integration"
-		publication="20161102214541"
+		publication="20161102215147"
 		e:sbtVersion="0.13" e:scalaVersion="2.10"
 	>
 		<description>

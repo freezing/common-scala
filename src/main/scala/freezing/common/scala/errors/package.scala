@@ -4,7 +4,7 @@ package object errors {
   trait Error
   case class EThrowable(t: Throwable) extends Error
   case class Errors(nel: List[Error]) extends Error {
-    // Check that nel is indeed non-empty list
+    // Check that nel is non-empty list
     if (nel.isEmpty) throw new IllegalArgumentException(s"Errors can't be created with an empty list!")
   }
 

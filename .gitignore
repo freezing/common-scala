@@ -9,6 +9,7 @@
 .lib/
 dist/*
 target/*
+project/target/*
 lib_managed/
 src_managed/
 project/boot/

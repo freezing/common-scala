@@ -4,7 +4,7 @@ import errors._
 
 package object results {
   // Result that can fail
-  sealed abstract class Result[+G] {
+  sealed abstract class EResult[+G] {
     def isBad: Boolean = this match {
       case Bad(_) => true
       case Good(_) => false
@@ -22,13 +22,13 @@ package object results {
     }
 
     /** Map on the good of this result. */
-    def map[D](g: G => D): Result[D] = this match {
+    def map[D](g: G => D): EResult[D] = this match {
       case Good(a)     => Good(g(a))
       case b @ Bad(_) => b
     }
 
     /** Bind through the good of this result. */
-    def flatMap[D](g: G => Result[D]): Result[D] = this match {
+    def flatMap[D](g: G => EResult[D]): EResult[D] = this match {
       case a @ Bad(_) => a
       case Good(b) => g(b)
     }
@@ -43,21 +43,21 @@ package object results {
   /**
     * Used to represent the failure case of a result.
     */
-  final case class Bad[B <: Error](b: B) extends Result[Nothing]
+  final case class Bad[B <: Error](b: B) extends EResult[Nothing]
 
   /**
     * Used to represent the success case of a result.
     */
-  final case class Good[G](g: G) extends Result[G]
+  final case class Good[G](g: G) extends EResult[G]
 
-  object Result {
-    def apply[R](r: R): Result[R] = Good(r)
-    def apply[R](f: Error): Result[R] = Bad(f)
-    def apply[R](t: Throwable): Result[R] = apply(Error.fromThrowable(t))
+  object EResult {
+    def apply[R](r: R): EResult[R] = Good(r)
+    def apply[R](f: Error): EResult[R] = Bad(f)
+    def apply[R](t: Throwable): EResult[R] = apply(Error.fromThrowable(t))
   }
 
-  implicit class ValidationOps[R](l: List[Result[R]]) {
-    def validate: Result[List[R]] = {
+  implicit class ValidationOps[R](l: List[EResult[R]]) {
+    def validate: EResult[List[R]] = {
       val (errors, results) = l.foldLeft(List.empty[Error], List.empty[R]) {
         case ((es, rs), Bad(f)) => (f :: es, rs)
         case ((es, rs), Good(g)) => (es, g :: rs)

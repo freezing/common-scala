@@ -1,6 +1,6 @@
 package freezing.common.scala
 
-import freezing.common.scala.errors._
+import freezing.common.scala.fails._
 import freezing.common.scala.results.EResult
 import org.scalatest.FlatSpec
 

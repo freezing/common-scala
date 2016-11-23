@@ -1,6 +1,6 @@
 package freezing.common.scala
 
-import errors._
+import fails._
 
 package object results {
   // Result that can fail
@@ -16,7 +16,7 @@ package object results {
     }
 
     /** Catamorphism. Run the first given function if Bad, otherwise, the second given function. */
-    def fold[X](bad: Error => X, good: G => X): X = this match {
+    def fold[X](bad: Fail => X, good: G => X): X = this match {
       case Bad(a) => bad(a)
       case Good(b) => good(b)
     }
@@ -33,7 +33,7 @@ package object results {
       case Good(b) => g(b)
     }
 
-    /** Return an empty option or option with one element on the good of this result. Useful to sweep errors under the carpet. */
+    /** Return an empty option or option with one element on the good of this result. Useful to sweep Fails under the carpet. */
     def toOption: Option[G] = this match {
       case Bad(_) => None
       case Good(g) => Some(g)
@@ -43,7 +43,7 @@ package object results {
   /**
     * Used to represent the failure case of a result.
     */
-  final case class Bad[B <: Error](b: B) extends EResult[Nothing]
+  final case class Bad[B <: Fail](b: B) extends EResult[Nothing]
 
   /**
     * Used to represent the success case of a result.
@@ -52,20 +52,20 @@ package object results {
 
   object EResult {
     def apply[R](r: R): EResult[R] = Good(r)
-    def apply[R](f: Error): EResult[R] = Bad(f)
-    def apply[R](t: Throwable): EResult[R] = apply(Error.fromThrowable(t))
+    def apply[R](f: Fail): EResult[R] = Bad(f)
+    def apply[R](t: Throwable): EResult[R] = apply(Fail.fromThrowable(t))
   }
 
   implicit class ValidationOps[R](l: List[EResult[R]]) {
     def validate: EResult[List[R]] = {
-      val (errors, results) = l.foldLeft(List.empty[Error], List.empty[R]) {
+      val (fails, results) = l.foldLeft(List.empty[Fail], List.empty[R]) {
         case ((es, rs), Bad(f)) => (f :: es, rs)
         case ((es, rs), Good(g)) => (es, g :: rs)
       }
 
-      errors match {
+      fails match {
         case Nil => Good(results.reverse)
-        case nel => Bad(Errors(nel.reverse))
+        case nel => Bad(Fails(nel.reverse))
       }
     }
   }
